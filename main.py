@@ -16,8 +16,8 @@ def main():
 	[row.pop(0) for row in raw_data]# Remove unnecessary column
 	column_names = raw_data.pop(0)
 	raw_labels = [row.pop(0) for row in raw_data]
-	labels = list(map(lambda x: 0 if x == 'B' else 1, raw_labels)) # Map it and turn it to a list. 0 for bening, 1 for malignant
-	features = np.array(raw_data)
+	labels = np.array(list(map(lambda x: 0 if x == 'B' else 1, raw_labels))) # Map it and turn it to a list. 0 for bening, 1 for malignant
+	features = np.array(raw_data, dtype='float')
 
 	# Dataset splitting (80% training, 20% test set)
 	dataset_length = len(features)
@@ -28,10 +28,9 @@ def main():
 	test_set_labels = labels[training_set_length:dataset_length]
 
 	# Model training and performance testing
-	#logreg = linear_model.LogisticRegression()
-	#logreg.fit(training_set, training_set_labels)
-	#print(logreg.predict(training_set))
-	#print(accuracy_score(test_set, test_set_labels))
+	logreg = linear_model.LogisticRegression()
+	logreg.fit(training_set, training_set_labels)
+	print(logreg.score(test_set, test_set_labels))
 
 
 if __name__ == '__main__':
