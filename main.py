@@ -1,13 +1,16 @@
+#!flask/bin/python
+from flask import Flask
 import csv
 import numpy as np
 from sklearn import linear_model
-from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 
 dest_file = 'data.csv'
 training_set_ratio = 80
+app = Flask(__name__)
 
 
-def main():
+def machine_learning():
 	with open(dest_file, 'r') as dest_f:
 		data_iter = csv.reader(dest_f, delimiter=',')
 		raw_data = [data for data in data_iter]
@@ -19,19 +22,24 @@ def main():
 	labels = np.array(list(map(lambda x: 0 if x == 'B' else 1, raw_labels))) # Map it and turn it to a list. 0 for bening, 1 for malignant
 	features = np.array(raw_data, dtype='float')
 
-	# Dataset splitting (80% training, 20% test set)
-	dataset_length = len(features)
-	training_set_length = (training_set_ratio * dataset_length) // 100
-	training_set = features[0:training_set_length]
-	training_set_labels = labels[0:training_set_length]
-	test_set = features[training_set_length:dataset_length]
-	test_set_labels = labels[training_set_length:dataset_length]
+	x_train, x_test, y_train, y_test = train_test_split(features, labels)
 
 	# Model training and performance testing
 	logreg = linear_model.LogisticRegression()
-	logreg.fit(training_set, training_set_labels)
-	print(logreg.score(test_set, test_set_labels))
+	logreg.fit(x_train, y_train)
+	print(logreg.score(x_test, y_test))
+
+
+@app.route('/')
+def index():
+	return "anime"
+
+
+@app.route('/test')
+def machine():
+	machine_learning()
+	return "xd"
 
 
 if __name__ == '__main__':
-	main()
+	app.run(debug=True)
