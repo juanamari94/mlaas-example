@@ -22,12 +22,18 @@ def machine_learning():
 	labels = np.array(list(map(lambda x: 0 if x == 'B' else 1, raw_labels))) # Map it and turn it to a list. 0 for bening, 1 for malignant
 	features = np.array(raw_data, dtype='float')
 
-	x_train, x_test, y_train, y_test = train_test_split(features, labels)
+	results = []
+	for i in range(0, 10000):
+		x_train, x_test, y_train, y_test = train_test_split(features, labels)
 
-	# Model training and performance testing
-	logreg = linear_model.LogisticRegression()
-	logreg.fit(x_train, y_train)
-	print(logreg.score(x_test, y_test))
+		# Model training and performance testing
+		logreg = linear_model.LogisticRegression()
+		logreg.fit(x_train, y_train)
+		results.append(logreg.score(x_test, y_test))
+	print(results)
+	print("max: ", max(results))
+	print("min: ", min(results))
+	print("mean: ", sum(results) / 10000)
 
 
 @app.route('/')
