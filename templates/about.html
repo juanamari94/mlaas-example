@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% include "/partials/head.html" %}
+    {% include "/partials/navbar.html" %}
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="well" id="whatisml">
+        <h1>¿Qué es el aprendizaje automático?</h1>
+        <p>
+          Es una rama de la inteligencia artificial centrada en la creación de algoritmos que,
+          dados los datos adecuados, "aprende" de éstos y otorga la capacidad de automatizar
+          tareas de clasificación y estimación, por ejemplo: distinguir una naranja de una manzana,
+          estimar el precio de una propiedad, etcétera. Para que los algoritmos funcionen adecuadamente
+          se requieren los datos adecuados y las cantidad suficiente de muestras de éstos. Hay dos
+          grandes grupos de aprendizaje automático muy distintos entre sí: el <strong>aprendizaje supervisado </strong>
+          y el <strong>aprendizaje no supervisado.</strong>
+          Por ahora solo proveemos servicios de clasificación y estimación por métodos de aprendizaje automático.
+        </p>
+        <p>
+          Generalmente se proveen <em>al menos dos</em> conjuntos de datos (pero idealmente habría un tercero):
+          <ul>
+            <li>Un "set de entrenamiento" que consiste de datos ya clasificados para que el algoritmo "aprenda".</li>
+            <li>Un "set de prueba" que consiste de datos sin clasificar para corroborar el rendimiento del algoritmo entrenado.</li>
+          </ul>
+          Ambos conceptos se pueden aplicar al aprendizaje supervisado y no supervisado, pero en el no supervisado
+          se puede prescindir de los resultados.
+          Los datos son varias muestras que cumplen con una estructura común: poseen un cojunto de <em>características</em>
+          que suelen ser diferentes medidas o propiedades de esa muestra, y cuando es un set de entrenamiento también poseen un
+          conjunto de <em>resultados o etiquetas</em> que vendrían a ser la clasificación o estimación adecuada de esa muestra.
+          Estos datos son lo que hacen posible al aprendizaje automático. Algoritmos existen varios, pero sin los datos y su volumen
+          adecuado simplemente no rinden frutos.
+        </p>
+      </div>
+      <div class="well" id="supervised-learning">
+        <h1>¿Qué es el aprendizaje supervisado?</h1>
+        <p>
+          Se le dice aprendizaje supervisado a aquellos algoritmos que utilizan directamente los datos
+          para poder llegar a conclusiones acordes que les permitan resolver problemas de clasificación y/o
+          estimación. Uno de sus requerimientos es que se provea un conjunto de datos que ya está clasificado y/o estimado.
+          Por ejemplo: para distinguir una naranja de una manzana es necesario proveer varias muestras donde
+          ya estén clasificadas una de otras.
+        </p>
+      </div>
+      <div class="well" id="unsupervised-learning">
+        <h1>¿Qué es el qué es el aprendizaje no supervisado?</h1>
+        <p>
+          El aprendizaje no supervisado es aquel que prescinde de las etiquetas, es decir que utiliza
+          datos sin etiquetar. Un algoritmo muy común de aprendizaje no supervisado es uno conocido como
+          K-means, que agrupa los datos en K diferentes grupos. Por ejemplo, dadas sus características,
+          las manzanas podrían caer en el grupo 1 y las naranjas en el grupo 2. Suelen ser menos claros
+          que los algoritmos de aprendizaje automático.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

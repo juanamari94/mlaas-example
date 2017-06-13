@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% include "/partials/head.html" %}
+    {% include "/partials/navbar.html" %}
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="well" id="requirements">
+        <h1>¿Qué necesito tener a mano?</h1>
+        <p>
+          Para que los algoritmos de aprendizaje automático funcionen adecuadamente se debe cumplir con
+          los siguientes requerimientos:
+          <ul>
+            <li>Poseer <em><strong>dos</strong></em> archivos de extensión <strong>csv</strong> (comma separated values).</li>
+            <li>El primer archivo debe tener como <strong>primer columna</strong> la variable a estimar o clasificar.
+              Con estos datos se entrenará al algoritmo. También se van a usar para corroborar la precisión del algoritmo.</li>
+            <li>El segundo archivo consiste en un .csv muy similar al primero pero <strong>prescindiendo de la primer columna</strong>.
+              En este no es necesario que se sepan los resultados de antemano, ya que estos son datos reales que serán clasificados o estimados.</li>
+          </ul>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
