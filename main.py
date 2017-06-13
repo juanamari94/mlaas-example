@@ -113,5 +113,9 @@ def upload_file():
 		return "success"
 	return 'failure'
 
+@app.route('/test')
+def test():
+	machine_learning()
+
 if __name__ == '__main__':
 	app.run(debug=True)
