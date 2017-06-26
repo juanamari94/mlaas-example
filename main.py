@@ -1,6 +1,5 @@
 #!flask/bin/python
 import os
-from flask import Flask, render_template, request, flash, redirect, url_for
 import csv
 import numpy as np
 from sklearn import linear_model
@@ -11,14 +10,13 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn import svm
 from sklearn.metrics import f1_score
-from werkzeug.utils import secure_filename
+import matplotlib.pyplot as plt
+import random
 
 dest_file = 'data.csv'
 UPLOAD_FOLDER = os.getcwd() + '/datasets'
 ALLOWED_EXTENSIONS = {'csv'}
 training_set_ratio = 80
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 models = {'Logistic Regression': linear_model.LogisticRegression(),
           'Decision Tree': tree.DecisionTreeClassifier(),
@@ -58,7 +56,7 @@ def machine_learning():
 	for model_name, model in models.items():
 		results = []
 		results_f1 = []
-		for i in range(0, 10000):
+		for i in range(0, 10):
 			x_train, x_test, y_train, y_test = train_test_split(features, labels)
 
 			# Model training and performance testing
@@ -67,67 +65,48 @@ def machine_learning():
 			predictions = model.predict(x_test)
 			f1score = f1_score(y_test, predictions)
 			results_f1.append(f1score)
+		max_result, min_result, mean, f1_score_mean = max(results), min(results), sum(results) / 10, sum(results_f1) / 10
 		print("Model: ", model_name)
-		print("max: ", max(results))
-		print("min: ", min(results))
-		print("mean: ", sum(results) / 10000)
-		print("f1 score mean: ", sum(results_f1) / 10000)
-
-
-def allowed_file(filename):
-	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@app.route('/')
-def index():
-	return render_template('index.html')
-
-
-@app.route('/about')
-def about():
-	return render_template('about.html')
-
-
-@app.route("/requirements")
-def requirements():
-	return render_template('requirements.html')
-
-
-@app.route('/classify')
-def classify_view():
-	return render_template("classify_estimate.html")
-
-
-@app.route('/estimate')
-def estimate_view():
-	return render_template("classify_estimate.html")
-
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
-	if ('train_test_set' or 'predict_set') not in request.files:
-		flash('No file part')
-		return "failure"
-	train_test_set = request.files['train_test_set']
-	predict_set = request.files['predict_set']
-	if train_test_set.filename == '' or predict_set.filename == '':
-		flash('No selected file')
-		return "failure"
-	if (train_test_set and allowed_file(train_test_set.filename)) \
-		and (predict_set and allowed_file(predict_set.filename)):
-		train_test_set_filename = secure_filename(train_test_set.filename)
-		train_test_set.save(os.path.join(app.config['UPLOAD_FOLDER'], train_test_set_filename))
-		predict_set_filename = secure_filename(predict_set.filename)
-		predict_set.save(os.path.join(app.config['UPLOAD_FOLDER'], predict_set_filename))
-		return "success"
-	return 'failure'
-
-
-@app.route('/test')
-def test():
-	machine_learning()
-	return "test"
+		print("max: ", max_result)
+		print("min: ", min_result)
+		print("mean: ", mean)
+		print("f1 score mean: ", f1_score_mean)
+		plotting_range = list(range(0, 10))
+		# Plot individual accuracy
+		plt.figure(1)
+		plt.title(model_name + " Accuracy Results")
+		plt.plot(plotting_range, results)
+		plt.xlabel("Iteration")
+		plt.ylabel("Accuracy")
+		plt.text(0.5, max_result, "Mean Accuracy: " + str(mean))
+		plt.text(0.5, max_result - 0.005, "Minimum Result: " + str(min_result))
+		plt.text(0.5, max_result - 0.01, "Maximum Result: " + str(max_result))
+		plt.savefig(model_name + " Accuracy Results")
+		plt.clf()
+		# Plot all accuracies
+		plt.figure(2)
+		plt.title("Full Accuracy Results")
+		plt.plot(plotting_range, results)
+		plt.xlabel("Iteration")
+		plt.ylabel("Accuracy")
+		plt.savefig("Full Accuracy Results")
+		# Plot individual F1 Score
+		plt.figure(3)
+		plt.title(model_name + " F1 Score")
+		plt.plot(plotting_range, results_f1)
+		plt.xlabel("Iteration")
+		plt.ylabel("F1 Score")
+		plt.text(0.5, max(results_f1) - 0.01, "F1 Score Mean: " + str(f1_score_mean))
+		plt.savefig(model_name + " F1 Score")
+		plt.clf()
+		# Plot all F1 Scores
+		plt.figure(4)
+		plt.title("Full F1 Score Results")
+		plt.plot(plotting_range, results)
+		plt.xlabel("Iteration")
+		plt.ylabel("F1 Score")
+		plt.savefig("Full F1 Score Results")
 
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	machine_learning()
