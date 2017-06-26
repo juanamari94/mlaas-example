@@ -31,7 +31,15 @@ models = {'Logistic Regression': linear_model.LogisticRegression(),
           'Support Vector Machine with RBF Kernel': svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
                                                             decision_function_shape=None, degree=3, gamma='auto',
                                                             kernel='rbf', max_iter=-1, probability=False,
-                                                            random_state=None, shrinking=True, tol=0.001, verbose=False)}
+                                                            random_state=None, shrinking=True, tol=0.001,
+                                                            verbose=False)}
+
+
+def load_data(filename):
+	with open(filename, 'r') as dest_f:
+		data_iter = csv.reader(dest_f, delimiter=',')
+		raw_data = [data for data in data_iter]
+		return raw_data
 
 
 def machine_learning():
@@ -40,10 +48,11 @@ def machine_learning():
 		raw_data = [data for data in data_iter]
 
 	# Data preparation
-	[row.pop(0) for row in raw_data]# Remove unnecessary column
+	[row.pop(0) for row in raw_data]  # Remove unnecessary column
 	column_names = raw_data.pop(0)
 	raw_labels = [row.pop(0) for row in raw_data]
-	labels = np.array(list(map(lambda x: 0 if x == 'B' else 1, raw_labels))) # Map it and turn it to a list. 0 for bening, 1 for malignant
+	labels = np.array(list(
+		map(lambda x: 0 if x == 'B' else 1, raw_labels)))  # Map it and turn it to a list. 0 for bening, 1 for malignant
 	features = np.array(raw_data, dtype='float')
 
 	for model_name, model in models.items():
@@ -104,7 +113,7 @@ def upload_file():
 	if train_test_set.filename == '' or predict_set.filename == '':
 		flash('No selected file')
 		return "failure"
-	if (train_test_set and allowed_file(train_test_set.filename))\
+	if (train_test_set and allowed_file(train_test_set.filename)) \
 		and (predict_set and allowed_file(predict_set.filename)):
 		train_test_set_filename = secure_filename(train_test_set.filename)
 		train_test_set.save(os.path.join(app.config['UPLOAD_FOLDER'], train_test_set_filename))
@@ -113,9 +122,12 @@ def upload_file():
 		return "success"
 	return 'failure'
 
+
 @app.route('/test')
 def test():
 	machine_learning()
+	return "test"
+
 
 if __name__ == '__main__':
 	app.run(debug=True)
