@@ -8,7 +8,6 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neural_network import MLPClassifier
-from sklearn import svm
 from sklearn.metrics import f1_score
 import matplotlib.pyplot as plt
 import time
@@ -54,7 +53,7 @@ def machine_learning():
 		results = []
 		results_f1 = []
 		time_results = []
-		for i in range(0, 10000):
+		for i in range(0, 500):
 			x_train, x_test, y_train, y_test = train_test_split(features, labels)
 			start_time = time.time()
 			# Model training and performance testing
@@ -74,7 +73,7 @@ def machine_learning():
 		print("f1 score mean: ", f1_score_mean)
 		print("Time mean: ", np.mean(time_results))
 		print("Time standard deviation: ", np.std(time_results))
-		plotting_range = list(range(0, 10000))
+		plotting_range = list(range(0, 500))
 		# Plot individual accuracy
 		plt.figure(1)
 		plt.title(model_name + " Accuracy Results")
@@ -89,11 +88,11 @@ def machine_learning():
 		plt.clf()
 		# Plot all accuracies
 		plt.figure(2)
-		plt.axis([0, 10000, 0.35, 1.0])
+		plt.axis([0, 500, 0.35, 1.0])
 		plt.title("Full Accuracy Results")
 		p = plt.plot(plotting_range, results)
 		color = p[0].get_color()
-		plt.text(0.5, 0.70 - (iteration / 20), model_name, color=color)
+		plt.text(0.5, 0.8 - (iteration / 20), model_name, color=color)
 		plt.xlabel("Iteration")
 		plt.ylabel("Accuracy")
 		plt.savefig("Full Accuracy Results")
@@ -109,11 +108,11 @@ def machine_learning():
 		plt.clf()
 		# Plot all F1 Scores
 		plt.figure(4)
-		plt.axis([0, 10000, 0.35, 1.0])
+		plt.axis([0, 500, 0.35, 1.0])
 		plt.title("Full F1 Score Results")
 		p = plt.plot(plotting_range, results_f1)
 		color = p[0].get_color()
-		plt.text(0.5, 0.6 - (iteration / 20), model_name, color=color)
+		plt.text(0.5, 0.7 - (iteration / 20), model_name, color=color)
 		plt.xlabel("Iteration")
 		plt.ylabel("F1 Score")
 		plt.savefig("Full F1 Score Results")
