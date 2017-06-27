@@ -11,7 +11,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn import svm
 from sklearn.metrics import f1_score
 import matplotlib.pyplot as plt
-import random
+import time
 
 dest_file = 'data.csv'
 UPLOAD_FOLDER = os.getcwd() + '/datasets'
@@ -26,11 +26,7 @@ models = {'Logistic Regression': linear_model.LogisticRegression(),
                                                   alpha=1e-5,
                                                   hidden_layer_sizes=(5, 2),
                                                   random_state=1),
-          'Support Vector Machine with RBF Kernel': svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
-                                                            decision_function_shape=None, degree=3, gamma='auto',
-                                                            kernel='rbf', max_iter=-1, probability=False,
-                                                            random_state=None, shrinking=True, tol=0.001,
-                                                            verbose=False)}
+          }
 
 
 def load_data(filename):
@@ -53,25 +49,32 @@ def machine_learning():
 		map(lambda x: 0 if x == 'B' else 1, raw_labels)))  # Map it and turn it to a list. 0 for bening, 1 for malignant
 	features = np.array(raw_data, dtype='float')
 
+	iteration = 0
 	for model_name, model in models.items():
 		results = []
 		results_f1 = []
-		for i in range(0, 10):
+		time_results = []
+		for i in range(0, 10000):
 			x_train, x_test, y_train, y_test = train_test_split(features, labels)
-
+			start_time = time.time()
 			# Model training and performance testing
 			model.fit(x_train, y_train)
+			time_results.append(time.time() - start_time)
 			results.append(model.score(x_test, y_test))
 			predictions = model.predict(x_test)
 			f1score = f1_score(y_test, predictions)
 			results_f1.append(f1score)
-		max_result, min_result, mean, f1_score_mean = max(results), min(results), sum(results) / 10, sum(results_f1) / 10
+		max_result, min_result, mean, f1_score_mean, time_mean, time_std, acc_std_dev, f1_std_dev = max(results), min(results), np.mean(results), \
+		                                                         np.mean(results_f1), np.mean(time_results), \
+                                                                 np.std(time_results), np.std(results), np.std(results_f1)
 		print("Model: ", model_name)
 		print("max: ", max_result)
 		print("min: ", min_result)
 		print("mean: ", mean)
 		print("f1 score mean: ", f1_score_mean)
-		plotting_range = list(range(0, 10))
+		print("Time mean: ", np.mean(time_results))
+		print("Time standard deviation: ", np.std(time_results))
+		plotting_range = list(range(0, 10000))
 		# Plot individual accuracy
 		plt.figure(1)
 		plt.title(model_name + " Accuracy Results")
@@ -79,14 +82,18 @@ def machine_learning():
 		plt.xlabel("Iteration")
 		plt.ylabel("Accuracy")
 		plt.text(0.5, max_result, "Mean Accuracy: " + str(mean))
-		plt.text(0.5, max_result - 0.005, "Minimum Result: " + str(min_result))
-		plt.text(0.5, max_result - 0.01, "Maximum Result: " + str(max_result))
+		plt.text(0.5, max_result - (max_result * 0.005), "Minimum Result: " + str(min_result))
+		plt.text(0.5, max_result - (max_result * 0.01), "Maximum Result: " + str(max_result))
+		plt.text(0.5, max_result - (max_result * 0.015), "Standard Deviation: " + str(acc_std_dev))
 		plt.savefig(model_name + " Accuracy Results")
 		plt.clf()
 		# Plot all accuracies
 		plt.figure(2)
+		plt.axis([0, 10000, 0.35, 1.0])
 		plt.title("Full Accuracy Results")
-		plt.plot(plotting_range, results)
+		p = plt.plot(plotting_range, results)
+		color = p[0].get_color()
+		plt.text(0.5, 0.70 - (iteration / 20), model_name, color=color)
 		plt.xlabel("Iteration")
 		plt.ylabel("Accuracy")
 		plt.savefig("Full Accuracy Results")
@@ -96,16 +103,40 @@ def machine_learning():
 		plt.plot(plotting_range, results_f1)
 		plt.xlabel("Iteration")
 		plt.ylabel("F1 Score")
-		plt.text(0.5, max(results_f1) - 0.01, "F1 Score Mean: " + str(f1_score_mean))
+		plt.text(0.5, max(results_f1), "F1 Score Mean: " + str(f1_score_mean))
+		plt.text(0.5, max(results_f1) - max(results_f1) * 0.005, "F1 Score Standard Deviation: " + str(f1_std_dev))
 		plt.savefig(model_name + " F1 Score")
 		plt.clf()
 		# Plot all F1 Scores
 		plt.figure(4)
+		plt.axis([0, 10000, 0.35, 1.0])
 		plt.title("Full F1 Score Results")
-		plt.plot(plotting_range, results)
+		p = plt.plot(plotting_range, results_f1)
+		color = p[0].get_color()
+		plt.text(0.5, 0.6 - (iteration / 20), model_name, color=color)
 		plt.xlabel("Iteration")
 		plt.ylabel("F1 Score")
 		plt.savefig("Full F1 Score Results")
+		# Plot individual time figures
+		plt.figure(5)
+		plt.title(model_name + " Time (s)")
+		plt.plot(plotting_range, time_results)
+		plt.xlabel("Iteration")
+		plt.ylabel("Time")
+		plt.text(0.5, max(time_results), "Time Mean: " + str(time_mean))
+		plt.text(0.5, max(time_results) - max(time_results) * 0.02, "Time Standard Deviation: " + str(time_std))
+		plt.savefig(model_name + " Time Results")
+		plt.clf()
+		# Plot all time figures
+		plt.figure(6)
+		plt.title("Full Time Results")
+		p = plt.plot(plotting_range, time_results)
+		color = p[0].get_color()
+		plt.text(0.5, 0.09 - (iteration / 100), model_name, color=color)
+		plt.xlabel("Iteration")
+		plt.ylabel("Time (s)")
+		plt.savefig("Full Time Results")
+		iteration += 1
 
 
 if __name__ == '__main__':
