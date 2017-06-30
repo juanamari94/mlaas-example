@@ -1,6 +1,6 @@
 #!flask/bin/python
 import os
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, abort
 import csv
 import numpy as np
 from sklearn import linear_model
@@ -12,6 +12,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn import svm
 from sklearn.metrics import f1_score
 from werkzeug.utils import secure_filename
+from supervised_binary_classification_model import SupervisedBinaryClassificationModel
 
 dest_file = 'data.csv'
 UPLOAD_FOLDER = os.getcwd() + '/datasets'
@@ -28,11 +29,7 @@ models = {'Logistic Regression': linear_model.LogisticRegression(),
                                                   alpha=1e-5,
                                                   hidden_layer_sizes=(5, 2),
                                                   random_state=1),
-          'Support Vector Machine with RBF Kernel': svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
-                                                            decision_function_shape=None, degree=3, gamma='auto',
-                                                            kernel='rbf', max_iter=-1, probability=False,
-                                                            random_state=None, shrinking=True, tol=0.001,
-                                                            verbose=False)}
+          }
 
 
 def load_data(filename):
@@ -77,7 +74,6 @@ def machine_learning():
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 @app.route('/')
 def index():
 	return render_template('index.html')
@@ -116,9 +112,35 @@ def upload_file():
 	if (train_test_set and allowed_file(train_test_set.filename)) \
 		and (predict_set and allowed_file(predict_set.filename)):
 		train_test_set_filename = secure_filename(train_test_set.filename)
-		train_test_set.save(os.path.join(app.config['UPLOAD_FOLDER'], train_test_set_filename))
+		train_test_set_path = os.path.join(app.config['UPLOAD_FOLDER'], train_test_set_filename)
+		train_test_set.save(train_test_set_path)
 		predict_set_filename = secure_filename(predict_set.filename)
-		predict_set.save(os.path.join(app.config['UPLOAD_FOLDER'], predict_set_filename))
+		predict_set_path = os.path.join(app.config['UPLOAD_FOLDER'], predict_set_filename)
+		predict_set.save(predict_set_path)
+		referrer = request.referrer
+		function = referrer[referrer.rfind('/') + 1:]
+		raw_training_data = load_data(train_test_set_path)
+		raw_prediction_data = load_data(predict_set_path)
+		if function == 'classify':
+			classifier = SupervisedBinaryClassificationModel(raw_training_data, raw_prediction_data, \
+			                                                 linear_model.LogisticRegression())
+			classifier.train()
+			print(raw_prediction_data)
+			predictions = classifier.predict()
+			result = '<table><tr>'
+			for column_name in classifier.column_names:
+				result += '<th>' + column_name + '</th>'
+			result += '</tr>'
+			for tup in predictions:
+				result += "<tr><td>" + str(classifier.classes[tup[0]]) + "</td>"
+				for feature in tup[1]:
+					result += "<td>" + str(feature) + "</td>"
+				result += "</tr>"
+			return result
+		elif function == 'estimate':
+			print("b")
+		else:
+			return abort(400)
 		return "success"
 	return 'failure'
 
