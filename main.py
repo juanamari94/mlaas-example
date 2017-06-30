@@ -69,13 +69,11 @@ def estimate_view():
 @app.route('/upload', methods=['POST'])
 def upload_file():
 	if ('train_test_set' or 'predict_set') not in request.files:
-		flash('No file part')
-		return "failure"
+		return render_template("error.html", error="Uno de los archivos no fue definido.")
 	train_test_set = request.files['train_test_set']
 	predict_set = request.files['predict_set']
 	if train_test_set.filename == '' or predict_set.filename == '':
-		flash('No selected file')
-		return "failure"
+		return render_template("error.html", error="Uno de los archivos no fue definido.")
 	if (train_test_set and allowed_file(train_test_set.filename)) \
 		and (predict_set and allowed_file(predict_set.filename)):
 		train_test_set_filename = secure_filename(train_test_set.filename)
@@ -88,7 +86,7 @@ def upload_file():
 		function = referrer[referrer.rfind('/') + 1:]
 		raw_training_data = load_data(train_test_set_path)
 		raw_prediction_data = load_data(predict_set_path)
-		
+
 		if function == 'classify' or function == 'estimate':
 			if function == 'classify':
 				model = SupervisedBinaryClassificationModel(raw_training_data, raw_prediction_data, \
@@ -99,11 +97,10 @@ def upload_file():
 			model.train()
 			predictions = model.predict()
 			result = create_html_table(predictions, model)
-			return render_template("results.html", result=Markup(result))
 		else:
-			return abort(400)
-		return "success"
-	return 'failure'
+			return render_template("error.html", error="Se intentó realizar una acción inválida.")
+		return render_template("results.html", result=Markup(result))
+	return render_template("error.html", error="No está permitido ese formato de archivo.")
 
 
 @app.route('/test')
