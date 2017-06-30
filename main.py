@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import f1_score
 from werkzeug.utils import secure_filename
-from supervised_binary_classification_model import SupervisedBinaryClassificationModel
+from models import SupervisedBinaryClassificationModel, SupervisedEstimationModel
 
 UPLOAD_FOLDER = os.getcwd() + '/datasets'
 ALLOWED_EXTENSIONS = {'csv'}
@@ -88,15 +88,18 @@ def upload_file():
 		function = referrer[referrer.rfind('/') + 1:]
 		raw_training_data = load_data(train_test_set_path)
 		raw_prediction_data = load_data(predict_set_path)
-		if function == 'classify':
-			classifier = SupervisedBinaryClassificationModel(raw_training_data, raw_prediction_data, \
-			                                                 linear_model.LogisticRegression())
-			classifier.train()
-			predictions = classifier.predict()
-			result = create_html_table(predictions, classifier)
+		
+		if function == 'classify' or function == 'estimate':
+			if function == 'classify':
+				model = SupervisedBinaryClassificationModel(raw_training_data, raw_prediction_data, \
+				                                                 linear_model.LogisticRegression())
+			elif function == 'estimate':
+				estimator = SupervisedEstimationModel(raw_training_data, raw_prediction_data, \
+																linear_model.LinearRegression())
+			model.train()
+			predictions = model.predict()
+			result = create_html_table(predictions, model)
 			return render_template("results.html", result=Markup(result))
-		elif function == 'estimate':
-			print("b")
 		else:
 			return abort(400)
 		return "success"
