@@ -1,6 +1,6 @@
 #!flask/bin/python
 import os
-from flask import Flask, render_template, request, flash, abort
+from flask import Flask, render_template, request, flash, abort, Markup
 import csv
 import numpy as np
 from sklearn import linear_model
@@ -25,7 +25,7 @@ def load_data(filename):
 
 
 def create_html_table(predictions, model):
-	table = '<table><tr>'
+	table = '<table class="table table-bordered"><tr>'
 	for column_name in model.column_names:
 		table += '<th>' + column_name + '</th>'
 	table += '</tr>'
@@ -94,7 +94,7 @@ def upload_file():
 			classifier.train()
 			predictions = classifier.predict()
 			result = create_html_table(predictions, classifier)
-			return result
+			return render_template("results.html", result=Markup(result))
 		elif function == 'estimate':
 			print("b")
 		else:
