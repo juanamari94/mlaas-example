@@ -2,6 +2,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 import data_parser
 
+
 class BaseModel:
 	def __init__(self, model):
 		self.model = model
@@ -9,12 +10,6 @@ class BaseModel:
 	def train(self):
 		return self.model.fit(self.x_train, self.y_train)
 
-	def accuracy_metrics(self):
-		return self.model.score(self.x_test, self.y_test)
-
-	def calculate_f1_score(self):
-		test_predictions = self.model.predict(self.x_test)
-		return f1_score(self.y_test, test_predictions)
 
 class SupervisedBinaryClassificationModel(BaseModel):
 
@@ -36,6 +31,14 @@ class SupervisedBinaryClassificationModel(BaseModel):
 		for i in range(0, len(predictions)):
 			results.append((int(predictions[i]), self.predict_set[i]))
 		return results
+
+	def accuracy_metrics(self):
+		return self.model.score(self.x_test, self.y_test)
+
+	def calculate_f1_score(self):
+		test_predictions = self.model.predict(self.x_test)
+		return f1_score(self.y_test, test_predictions)
+
 
 class SupervisedEstimationModel(BaseModel):
 

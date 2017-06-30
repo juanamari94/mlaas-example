@@ -1,12 +1,8 @@
 #!flask/bin/python
 import os
-from flask import Flask, render_template, request, flash, abort, Markup
+from flask import Flask, render_template, request, Markup
 import csv
-import numpy as np
 from sklearn import linear_model
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.metrics import f1_score
 from werkzeug.utils import secure_filename
 from models import SupervisedBinaryClassificationModel, SupervisedEstimationModel
 
@@ -24,22 +20,29 @@ def load_data(filename):
 		return raw_data
 
 
-def create_html_table(predictions, model):
+def create_html_table(predictions, model, referrer):
 	table = '<table class="table table-bordered"><tr>'
 	for column_name in model.column_names:
 		table += '<th>' + column_name + '</th>'
 	table += '</tr>'
 	for tup in predictions:
-		table += "<tr><td>" + str(model.classes[tup[0]]) + "</td>"
+		if referrer == 'classify':
+			table += "<tr><td>" + str(model.classes[tup[0]]) + "</td>"
+		elif referrer == 'estimate':
+			table += "<tr><td>" + str(tup[0]) + "</td>"
 		for feature in tup[1]:
 			table += "<td>" + str(feature) + "</td>"
 		table += "</tr>"
-	table += '<tr><td> Precisión: ' + str(model.accuracy_metrics()) + '</td></tr>'
-	table += '<tr><td> Puntaje F1: ' + str(model.calculate_f1_score()) + '</td></tr></table>'
+	print(referrer)
+	if referrer == 'classify':
+		table += '<tr><td> Precisión: ' + str(model.accuracy_metrics()) + '</td></tr>'
+		table += '<tr><td> Puntaje F1: ' + str(model.calculate_f1_score()) + '</td></tr></table>'
 	return table
+
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/')
 def index():
@@ -88,25 +91,20 @@ def upload_file():
 		raw_prediction_data = load_data(predict_set_path)
 
 		if function == 'classify' or function == 'estimate':
+			model = None
 			if function == 'classify':
 				model = SupervisedBinaryClassificationModel(raw_training_data, raw_prediction_data, \
 				                                                 linear_model.LogisticRegression())
 			elif function == 'estimate':
-				estimator = SupervisedEstimationModel(raw_training_data, raw_prediction_data, \
+				model = SupervisedEstimationModel(raw_training_data, raw_prediction_data, \
 																linear_model.LinearRegression())
 			model.train()
 			predictions = model.predict()
-			result = create_html_table(predictions, model)
+			result = create_html_table(predictions, model, function)
 		else:
 			return render_template("error.html", error="Se intentó realizar una acción inválida.")
 		return render_template("results.html", result=Markup(result))
 	return render_template("error.html", error="No está permitido ese formato de archivo.")
-
-
-@app.route('/test')
-def test():
-	machine_learning()
-	return "test"
 
 
 if __name__ == '__main__':
