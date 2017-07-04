@@ -1,6 +1,44 @@
 <form action="/upload" method="post" enctype="multipart/form-data">
+  <span style="color: red;">¡Ambos archivos deben ser del formato .csv!</span>
+  <label> Primero ingresarás los datos de entrenamiento. Recordá que la primer columna debe contener el dato que se quiere clasificar o estimar y que debe contener los nombres de las columnas al principio. Por ejemplo:</label>
+  <table class="table table-bordered">
+    <thead>
+      <th>Variable a predecir</th>
+      <th>A</th>
+      <th>B</th>
+    </thead>
+    <tr>
+      <td>X</td>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>Y</td>
+      <td>3</td>
+      <td>4</td>
+    </tr>
+  </table>
+  <span style="color: red;">¡Recordá que si es una acción de estimación no debe contener la primer columna con el dato a clasificar!</span>
+  <br>
+  Por ejemplo:
+    <table class="table table-bordered">
+    <thead>
+      <th>A</th>
+      <th>B</th>
+    </thead>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>4</td>
+    </tr>
+  </table>
+  <label>Datos de entrenamiento</label>
   <input type="file" name="train_test_set" hidden>
   <br>
+  <label>Datos a predecir. Recordá que aquí no debe estar la primer columna ni los nombres de las columnas.</label>
   <input type="file" name="predict_set" hidden>
   <br>
   <input class="btn btn-primary" type="submit" value="¡Subir!" name="submit">

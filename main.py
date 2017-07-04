@@ -53,7 +53,7 @@ def machine_learning():
 		results = []
 		results_f1 = []
 		time_results = []
-		for i in range(0, 500):
+		for i in range(0, 250):
 			x_train, x_test, y_train, y_test = train_test_split(features, labels)
 			start_time = time.time()
 			# Model training and performance testing
@@ -73,7 +73,7 @@ def machine_learning():
 		print("f1 score mean: ", f1_score_mean)
 		print("Time mean: ", np.mean(time_results))
 		print("Time standard deviation: ", np.std(time_results))
-		plotting_range = list(range(0, 500))
+		plotting_range = list(range(0, 250))
 		# Plot individual accuracy
 		plt.figure(1)
 		plt.title(model_name + " Accuracy Results")
@@ -88,7 +88,7 @@ def machine_learning():
 		plt.clf()
 		# Plot all accuracies
 		plt.figure(2)
-		plt.axis([0, 500, 0.35, 1.0])
+		plt.axis([0, 250, 0.35, 1.0])
 		plt.title("Full Accuracy Results")
 		p = plt.plot(plotting_range, results)
 		color = p[0].get_color()
@@ -108,7 +108,7 @@ def machine_learning():
 		plt.clf()
 		# Plot all F1 Scores
 		plt.figure(4)
-		plt.axis([0, 500, 0.35, 1.0])
+		plt.axis([0, 250, 0.35, 1.0])
 		plt.title("Full F1 Score Results")
 		p = plt.plot(plotting_range, results_f1)
 		color = p[0].get_color()
