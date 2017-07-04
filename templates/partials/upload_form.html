@@ -18,27 +18,22 @@
       <td>4</td>
     </tr>
   </table>
-  <span style="color: red;">¡Recordá que si es una acción de estimación no debe contener la primer columna con el dato a clasificar!</span>
-  <br>
-  Por ejemplo:
-    <table class="table table-bordered">
-    <thead>
-      <th>A</th>
-      <th>B</th>
-    </thead>
-    <tr>
-      <td>1</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>4</td>
-    </tr>
-  </table>
   <label>Datos de entrenamiento</label>
   <input type="file" name="train_test_set" hidden>
   <br>
-  <label>Datos a predecir. Recordá que aquí no debe estar la primer columna ni los nombres de las columnas.</label>
+  <label>Datos a predecir. Recordá que aquí no debe estar la primer columna ni los nombres de las columnas, si bien deben preservar el orden.</label>
+  Por ejemplo:
+  <table class="table table-bordered">
+  <tr>
+    <td>1</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>4</td>
+  </tr>
+  </table>
+  <label>Datos a predecir</label>
   <input type="file" name="predict_set" hidden>
   <br>
   <input class="btn btn-primary" type="submit" value="¡Subir!" name="submit">
