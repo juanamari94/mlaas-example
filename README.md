@@ -6,6 +6,7 @@ A small example that is part of a bigger project of a MLaaS platform, part of a 
 * Python 3.5.x or higher.
 * Flask installed.
 * scikit-learn installed.
+* numpy installed.
 
 ## What is this?
 
